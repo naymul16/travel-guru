@@ -1,17 +1,24 @@
-import React, { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import React, { useContext, useState } from 'react';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import Placeinformation from '../../Fakedata/PlaceInformation';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from '../../project_image/Logo.png'
 import './Booking.css'
 import { useForm } from 'react-hook-form';
+import { userContext } from '../../App';
 
 
 
 const Booking = () => {
+    const [place,setPlace] = useContext(userContext)
     //react hook form
+    let history = useHistory()
     const { register, handleSubmit, watch, errors } = useForm();
-    const onSubmit = data => console.log(data);
+    const onSubmit = data =>{
+        data.preventDefault();
+        history.push("/search")
+    }
+    console.log(place)
 
 
     const placeData = Placeinformation;
@@ -57,7 +64,7 @@ const Booking = () => {
                                 </div>
                                 <div className="form-group">
                                     <label style={{color:'grey',fontweight:"500"}} for="destination">Destination</label>
-                                    <input className="form-control" name="destination" id="destination" ref={register({ required: true })} />
+                                    <input className="form-control" defaultValue={placeName} name="destination" id="destination" ref={register({ required: true })} />
                                     {errors.destination && <span style={{color:'red'}}>Destination is required</span>}
                                 </div>
 
@@ -74,11 +81,8 @@ const Booking = () => {
                                         {errors.toDate && <span style={{color:'red'}}>To Date is required</span>}
                                    </div>
                                 </div>
-
-                                {/* this is the form submit button */}
-                                <Link to="/search">
-                                    <input style={{backgroundColor:"#F9A51A",color:"black",fontWeight:"700"}} className="form-control" type="submit" value="Start Booking" />
-                                </Link>
+                                    <button style={{backgroundColor:"#F9A51A",color:"black",fontWeight:"700"}} className="form-control" type="submit">Start Booking</button>
+                                
                          </form>
                         </div>
                     </div>

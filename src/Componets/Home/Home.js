@@ -1,6 +1,6 @@
 import React from 'react';
 import './Home.css'
-import logo from '../../project_image/Logo.png'
+import logo from '../../project_image/WhiteLogo.png'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import sreemongolImage from '../../project_image/Image/Sreemongol.png'
 import sundorbanImage from '../../project_image/Image/sundorbon.png'
@@ -21,7 +21,9 @@ const Home = () => {
                 <div className="search-box">
                     <input placeholder="search your destination..." type="text"/>
                 </div>
-                <button className="button">Log in</button>
+                <Link to="/login">
+                    <button className="button">Log in</button>
+                </Link>
                 <ul>
                     <li><a href="/news">News</a></li>
                     <li><a href="/destination">Destination</a></li>
