@@ -1,8 +1,6 @@
 import React, { createContext, useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import Home from './Componets/Home/Home';
-import { Container } from '@material-ui/core';
 import {
   BrowserRouter as Router,
   Switch,
@@ -11,22 +9,23 @@ import {
 } from "react-router-dom";
 import Booking from './Componets/Booking/Booking';
 import Search from './Componets/Search/Search';
-import Hotelroom from './Componets/Hotelroom/Hotelroom';
 import PrivateRoute from './Componets/PrivateRoute/PrivateRoute';
 import Login from './Componets/Login/Login';
 
 export const userContext = createContext();
 
 function App() {
-    const [isSignedIn,setSignedIn] = useState({})
-    const [place,setPlace] = useState({})
+    
+  const [isSignedIn,setSignedIn] = useState({destination:""})
+   
     
   return (
      
     
-     <userContext.Provider value={[isSignedIn,setSignedIn,place,setPlace]}>
+     <userContext.Provider value={[isSignedIn,setSignedIn]}>
          <h3>email: {isSignedIn.email}</h3>
-          <Router>
+        
+        <Router>
           <Switch>
               <Route path="/home">
                   <Home></Home>

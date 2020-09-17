@@ -9,7 +9,7 @@ const Hotelroom = (props) => {
             <div>
                 <img  style={{width:"200px" ,height:"200px"}} src={img} alt=""/>
             </div>
-            <div style={{width:"313px",height:"200px",marginLeft:"30px"}}>
+            <div style={{width:"313px",height:"200px",marginLeft:"30px",border:"1px solid grey",padding:"5px"}}>
                 <h5>{name}</h5>
                 <p><span>4 guests</span> <span>2 bedrooms</span><span> 2 beds</span><span> 2 baths</span></p>
                 <p><span>Wif Air conditioning Kitchen</span></p>

@@ -8,12 +8,28 @@ import * as firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import firebaseConfig from '../../Firebaseconfig';
-import { useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { userContext } from '../../App';
 
 firebase.initializeApp(firebaseConfig);
 
+export const handleLogOut = () =>{
+   return firebase.auth().signOut()
+    .then(()=>{
+        const logInUser = {
+            isSignedin:false,
+            email: " ",
+            name:" ",  
+        }
+        return logInUser
+    })
+    .catch(function(error) {
+        
+      });
+}
+
 const Login = () => {
+    
     const [login,setlogin] = useState('login') 
     const [isSignedIn,setSignedIn] = useContext(userContext)
     let history = useHistory();
@@ -27,16 +43,19 @@ const Login = () => {
 
    
     let provider = new firebase.auth.GoogleAuthProvider();
+    let fbprovider = new firebase.auth.FacebookAuthProvider();
 
     const signInWithGoogle = () =>{
         firebase.auth().signInWithPopup(provider)
         .then(data=>{
             const {email,displayName} = data.user
             const logInUser = {
+                ...isSignedIn,
                 isSignedin:true,
                 email: email,
                 name: displayName,
-                success:true
+                success:true,
+                
             }
             setSignedIn(logInUser)
             history.replace(from);
@@ -47,19 +66,38 @@ const Login = () => {
         });
     }
 
+    const signInWithFacebook = () =>{
+        firebase.auth().signInWithPopup(fbprovider)
+        .then(data =>{
+            const {email,displayName} = data.user
+            const logInUser = {
+                ...isSignedIn,
+                isSignedin:true,
+                email: email,
+                name: displayName,
+                success:true,
+                
+            }
+            setSignedIn(logInUser)
+            history.replace(from);
+        })
+        .catch(error =>{
+            console.log(error)
+        });
+    }
+   
+
     return (
         <div>
             <div className="container">
                 <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                    <a className="navbar-brand" href="#"><img style={{height:"56px",wifth:"120.26px"}} src={logo} alt=""/></a>
+                    <a className="navbar-brand" href="/home"><img style={{height:"56px",wifth:"120.26px"}} src={logo} alt=""/></a>
                     <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
                         <div className="navbar-nav ml-auto">
-                            <a className="nav-link font-weight-bold" href="/news">News</a>
-                            <a className="nav-link font-weight-bold" href="/destination">Destination</a>
-                            <a className="nav-link font-weight-bold" href="/blog">Blog</a>
-                            <a className="nav-link font-weight-bold" href="/contact">Contact</a>
-                            <a className="nav-link font-weight-bold" href="#"><button className="nav-button">Login</button></a>
-                           
+                            <Link className="nav-btn"  to="/home">Home</Link>
+                            <Link className="nav-btn" to="/destination">Destination</Link>
+                            <Link  className="nav-btn" to="/blog">Blog</Link>
+                            <Link  className="nav-btn" to="/contact">Contact</Link>
                         </div>
                     </div>
                    
@@ -114,7 +152,7 @@ const Login = () => {
                     }
                     <p style={{textAlign:"center"}}>Or</p>
                     <div className="button-group">
-                        <button> <img className="fb-img" src={facebookImg} alt=""/> Continue with facebook</button>
+                        <button onClick={signInWithFacebook}> <img className="fb-img" src={facebookImg} alt=""/> Continue with facebook</button>
                         <button onClick={signInWithGoogle}><img className="google-img" src={googleImg} alt=""/> Continue with google</button>
                     </div>
 

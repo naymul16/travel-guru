@@ -15,7 +15,7 @@
     background-color:#F9A51A ;
     padding: 5px;
 }
-span{
+p span{
     color: grey;
     font-size: 15px;
     font-weight: normal;
@@ -26,6 +26,10 @@ a{
     color:#F9A51A ;
     font-weight: 500;
     font-size: 16px
+}
+.nav-btn{
+    color: black;
+    margin-right: 20px;
 }
 .login-button{
     width: 461px;
