@@ -13,35 +13,122 @@ import { userContext } from '../../App';
 
 firebase.initializeApp(firebaseConfig);
 
-export const handleLogOut = () =>{
-   return firebase.auth().signOut()
-    .then(()=>{
-        const logInUser = {
-            isSignedin:false,
-            email: " ",
-            name:" ",  
-        }
-        return logInUser
-    })
-    .catch(function(error) {
-        
-      });
-}
-
 const Login = () => {
-    
     const [login,setlogin] = useState('login') 
     const [isSignedIn,setSignedIn] = useContext(userContext)
+    const [user,setUser] = useState({
+        name : "",
+        email: "",
+        password: ""
+       
+    })
+    const [error,setError] = useState({
+        name : "",
+        email: "",
+        password: ""
+    })
+
     let history = useHistory();
     let location = useLocation();
-
-     let { from } = location.state || { from: { pathname: "/" } };
+    let { from } = location.state || { from: { pathname: "/" } };
 
     const toogleLogin = (data) =>{
-        setlogin(data)
+            setlogin(data)
     }
 
-   
+    const handleBlur = (e) => {
+        let isFieldValid = true;
+        if(e.target.name === "email"){
+          isFieldValid = /\S+@\S+\.\S+/.test(e.target.value);
+
+          if(isFieldValid === false) {
+              const errorInfo = {...error}
+              errorInfo[e.target.name] = "invalid email address"
+              setError(errorInfo)
+          }
+            
+        }
+        if (e.target.name === "password") {
+           const isPasswordValid = e.target.value.length > 6;
+           const isPasswordHasNumber = /\d{1}/.test(e.target.value);
+           isFieldValid = isPasswordHasNumber && isPasswordValid;
+
+           if(isFieldValid === false) {
+            const errorInfo = {...error}
+            errorInfo[e.target.name] = "Password must be 6 digit and atleast one number"
+            setError(errorInfo)
+        }
+        
+        }
+        if(isFieldValid){
+          const errorInfo = {...error}
+          errorInfo[e.target.name] = ""
+          setError(errorInfo)
+          const newUserInfo = {...user}
+          newUserInfo[e.target.name]= e.target.value;
+          setUser(newUserInfo)
+        }
+    }
+
+    //form sumbmit function
+    const handleSubmit = (e) =>{
+        if(login ==="createAccount" && user.email && user.password){
+             firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
+            .then(res => {
+                updateUserName(user.name)
+                const {email,displayName} = res.user
+                const logInUser = {
+                    ...isSignedIn,
+                    isSignedin:true,
+                    email: email,
+                    name: displayName,
+                    success:true,
+                    
+                }
+                setSignedIn(logInUser)
+                history.replace(from);
+            })
+            .catch(function(error) {
+               console.log(error)
+              });
+        }
+        if(login ==="login" && user.email && user.password){
+           
+            firebase.auth().signInWithEmailAndPassword(user.email,user.password)
+            .then(res=>{
+                const {email,displayName} = res.user
+                const logInUser = {
+                    ...isSignedIn,
+                    isSignedin:true,
+                    email: email,
+                    name: displayName,
+                    success:true,
+                            
+                    }
+                setSignedIn(logInUser)
+                history.replace(from);
+                 })
+            .catch(function(error) {
+                      
+                    });
+            
+        }
+        e.preventDefault()
+
+    }
+
+    //update user name 
+    const updateUserName = userName => {
+        var user = firebase.auth().currentUser;
+        user.updateProfile({
+        displayName: userName
+    })
+    .then(res =>{
+    })
+    
+    }
+
+   //facebook and google log in provider
     let provider = new firebase.auth.GoogleAuthProvider();
     let fbprovider = new firebase.auth.FacebookAuthProvider();
 
@@ -85,6 +172,8 @@ const Login = () => {
             console.log(error)
         });
     }
+
+   
    
 
     return (
@@ -106,33 +195,51 @@ const Login = () => {
             </div>
             <div className="container">
                 <div className="login-form">
+
                     {
                         login === 'login'?<h5>Login</h5>:<h5>Create an Account</h5>
                     }
+
                     <form style={{marginTop:"30px"}} action="">
                         {
                             login === 'createAccount' &&
                             <div>
                                 <div class="form-group">
-                            <input placeholder="First Name" required type="text" class="form-control" id="first-name"/>
-                           </div>
-                                <div class="form-group">
-                                  <input placeholder="Last Name" required type="text" class="form-control" id="last-name"/>
-                                </div> 
+                                    <input
+                                     onBlur={handleBlur} 
+                                     placeholder="Name"
+                                     name = "name" 
+                                     required type="text" 
+                                     class="form-control"
+                                     id="first-name"
+                                    />
+                                </div>
                             </div> 
                         }
+
                       <div class="form-group">
-                        <input placeholder="Username or Email" required type="text" class="form-control" id="email"/>
+                                 <input
+                                 onBlur={handleBlur}  
+                                 placeholder="Email"
+                                 name = "email" 
+                                 required type="text" 
+                                 class="form-control" 
+                                 id="email"
+                                 />
+                                <small style={{color:"red"}}>{error.email}</small>
                       </div> 
+
                       <div class="form-group">
-                        <input placeholder="Password" required type="password" class="form-control" id="password"/>
+                                <input
+                                onBlur={handleBlur}  
+                                placeholder="Password"
+                                name = "password"
+                                 required type="password" 
+                                 class="form-control" 
+                                 id="password"/>
+                                  <small style={{color:"red"}}>{error.password}</small>
                       </div>
-                      {
-                          login === 'createAccount' && 
-                          <div class="form-group">
-                                <input placeholder="Confirm Password" required type="password" class="form-control" id="password"/>
-                          </div>
-                      }
+                     
                      {
                          login === 'login' &&
                           <div style={{display:"flex",justifyContent:"space-between"}}>
@@ -145,12 +252,16 @@ const Login = () => {
                             </div>
                          </div>
                      }
-                      <button className="login-button">{login === 'login'?"Login":"Create Account"}</button>      
+
+                      <button onClick={handleSubmit} className="login-button">{login === 'login'?"Login":"Create Account"}</button>      
                     </form>
+
                     {
                         login === 'login' ? <p>Don't have an account? <span onClick={()=>toogleLogin('createAccount')} className="create-account">Create an account</span></p> :<p>Already have an account? <span onClick={()=>toogleLogin('login')} className="create-account">Login</span></p>
                     }
+
                     <p style={{textAlign:"center"}}>Or</p>
+
                     <div className="button-group">
                         <button onClick={signInWithFacebook}> <img className="fb-img" src={facebookImg} alt=""/> Continue with facebook</button>
                         <button onClick={signInWithGoogle}><img className="google-img" src={googleImg} alt=""/> Continue with google</button>

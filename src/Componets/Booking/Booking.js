@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import Placeinformation from '../../Fakedata/PlaceInformation';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import logo from '../../project_image/Logo.png'
+import logo from '../../project_image/WhiteLogo.png'
 import './Booking.css'
 import { userContext } from '../../App';
 
@@ -38,7 +38,7 @@ const Booking = () => {
                         <input placeholder="search your destination..." type="text"/>
                     </div>
                     {
-                        isSignedIn.email ? " " : <button className="button">Log in</button>
+                        isSignedIn.email ? " " : <Link to="/login"><button className="button">Log in</button></Link>
                     }
                     <ul>
                         <li><a href="/news">News</a></li>

@@ -11,6 +11,7 @@ import Booking from './Componets/Booking/Booking';
 import Search from './Componets/Search/Search';
 import PrivateRoute from './Componets/PrivateRoute/PrivateRoute';
 import Login from './Componets/Login/Login';
+import Nomatch from './Componets/Nomatch/Nomatch';
 
 export const userContext = createContext();
 
@@ -22,9 +23,7 @@ function App() {
   return (
      
     
-     <userContext.Provider value={[isSignedIn,setSignedIn]}>
-         <h3>email: {isSignedIn.email}</h3>
-        
+     <userContext.Provider value={[isSignedIn,setSignedIn]}> 
         <Router>
           <Switch>
               <Route path="/home">
@@ -42,6 +41,9 @@ function App() {
               <PrivateRoute path="/search">
                   <Search></Search>
               </PrivateRoute>
+              <Route path="*">
+                  <Nomatch></Nomatch>
+              </Route>
           </Switch>
       </Router>
      </userContext.Provider>
